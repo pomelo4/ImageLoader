@@ -4,6 +4,8 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import java.io.FileDescriptor;
+
 /**
  * 图片压缩功能实现
  */
@@ -31,6 +33,21 @@ public class ImageResizer {
         // 根据采样率重新加载图面
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeResource(res, resId, options);
+    }
+
+    /**
+     * 从文件中加载出一个采样图
+     */
+    public Bitmap decodeSampledBitmapFromFileDescriptor(FileDescriptor fd, int reqWidth, int reqHeight) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFileDescriptor(fd, null, options);
+
+        options.inSampleSize = calculateInSampleSize(options, reqWidth,
+                reqHeight);
+
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFileDescriptor(fd, null, options);
     }
 
     /**
